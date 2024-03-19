@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import HeroList from "./IndexPage/HeroList.jsx"
 import LoginPage from "./IndexPage/LoginPage.jsx";
 import Navbar from './IndexPage/Navbar.jsx';
+import Showimg from './ImagePage/ShowImg.jsx';
 
 function App() {
     const [userExists, setUserExists] = useState(false);
 
     useEffect(() => {
-        document.title = "沃特國際企業";
+        document.title = "MyImage";
         // 檢查localStorage中是否有token
         const token = localStorage.getItem('token');
         if (token) {
@@ -19,11 +19,11 @@ function App() {
         <div className="flex items-center justify-center min-h-screen bg-image">
             {userExists ? (
                 <div className="flex min-h-screen">
-                    <Navbar />
-                    <HeroList/>
+                    <Navbar/>
+                    <Showimg/>
                 </div>
             ) : (
-                <LoginPage></LoginPage>
+                <LoginPage/>
             )}
         </div>
     );

@@ -18,7 +18,7 @@ function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8000/api/Home/Login', {
+      const response = await fetch('http://localhost:5259/api/Home/Login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,11 +26,12 @@ function LoginPage() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.text(); // 直接讀取文本響應，因為後端返回純JWT字符串
+      const data = await response.json(); // 直接讀取文本響應，因為後端返回純JWT字符串
 
       if (response.ok) {
-        console.log('提交成功, Token:', data);
-        localStorage.setItem('token', data); // 儲存JWT到localStorage
+        //console.log('提交成功, Token:', data);
+        localStorage.setItem('token', data.token); // 儲存JWT到localStorage
+        localStorage.setItem('ID', data.id);
         // 刷新頁面
         window.location.reload();
       } else {

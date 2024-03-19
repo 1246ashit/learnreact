@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg-image {
-    background-image: url('https://e0.pxfuel.com/wallpapers/280/514/desktop-wallpaper-superman-man-of-steel-logo-164.jpg');
-    background-size: cover; /* 覆蓋整個元素，保持圖片比例 */
-    background-position: center; /* 將背景圖片置於元素中央 */
-    min-height: 400px; /* 或根據需要設置特定高度 */
-    background-attachment: fixed;
-  }
+body {
+  background-color: black;
+}

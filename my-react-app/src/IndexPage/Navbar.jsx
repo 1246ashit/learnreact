@@ -23,13 +23,9 @@ function Navbar () {
                 <div style={{ marginLeft: '20%' }}>
                     <div className="flex items-center space-x-2 mb-4 cursor-pointer" onClick={ToHome}>
                         <FaHome size={40}/>
-                        <div className="text-lg font-bold hover:text-gray-300">英雄清單</div>
+                        <div className="text-lg font-bold hover:text-gray-300">我的梗圖</div>
                     </div>
                     <div className="flex flex-col space-y-4">
-                        <div className="flex items-center space-x-2 mb-4 cursor-pointer" onClick={ToAddHero}>
-                            <CiCirclePlus size={40}/>
-                            <div className="text-lg font-semibold hover:text-gray-300">新增</div>
-                        </div>
                         <div className="flex items-center space-x-2 mb-4 cursor-pointer" onClick={ToLogout}>
                             <CiLogout size={40}/>
                             <div className="text-lg font-semibold hover:text-gray-300">登出</div>

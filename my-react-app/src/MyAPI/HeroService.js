@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000/api/';
+const BASE_URL = 'http://localhost:5259/api/';
 
 // 假設你的JWT儲存在localStorage中
 const getAuthToken = () => localStorage.getItem('token');
@@ -23,4 +23,19 @@ const fetchApi = async (endpoint, options = {}) => {
 // 獲取資源，使用JWT
 export const fetchResource = async () => {
   return fetchApi('Home/GetAll');
+};
+
+
+export const DeleteHero = async (id) => {
+  console.log("來自DeleteHero的ID:"+id)
+  try {
+    const data = await fetchApi('Home/DeleteHero', {
+      method: 'POST',
+      body: JSON.stringify({ id }) , // 將 ID 包裝在請求體中
+    });
+    console.log(data.message); // "success"
+  } catch (error) {
+    console.error('刪除英雄失敗', error);
+    throw error;
+  }
 };
