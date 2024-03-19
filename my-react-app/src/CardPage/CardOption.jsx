@@ -60,8 +60,8 @@ function CardOption(props) {
         <>
             <div ref={gearIconRef} onClick={toggleOptions} className="cursor-pointer" style={{marginLeft:"95%"}}>
                 <FaGear size={30}/>
+                {showOptions && ReactDOM.createPortal(optionsContent, document.body)}
             </div>
-            {showOptions && ReactDOM.createPortal(optionsContent, document.body)}
         </>
     );
 }
