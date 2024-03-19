@@ -16,7 +16,7 @@ function App() {
     }, []); // 傳入空依賴數組，以確保這段代碼只在組件掛載時執行一次
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-image">
+        <div className="flex items-center justify-center min-h-screen">
             {userExists ? (
                 <div className="flex min-h-screen">
                     <Navbar/>
