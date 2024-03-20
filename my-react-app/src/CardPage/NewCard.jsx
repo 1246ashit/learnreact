@@ -1,82 +1,83 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaList } from "react-icons/fa6";
-import { BsFillSendFill ,BsFillTrash2Fill } from "react-icons/bs";
+import { BsFillSendFill, BsFillTrash2Fill } from "react-icons/bs";
+import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 
 function NewCard(props) {
-    // 定義一個 state 來儲存選擇的檔案陣列
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    // 定義一個 state 來控制清單的顯示和隱藏
-    const [showFileList, setShowFileList] = useState(false);
-    // 取得按鈕的參考
-    const buttonRef = useRef(null);
+    const [files, setFiles] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
 
-    // 處理檔案選擇的事件
-    const handleFileChange = (event) => {
-        // 取得選擇的檔案並轉換成陣列
-        const files = Array.from(event.target.files);
-        // 更新 state 以添加新選擇的檔案
-        setSelectedFiles(prevFiles => [...prevFiles, ...files]);
+    const handleImageChange = (e) => {
+        e.preventDefault();
+
+        // 更新檔案列表
+        const selectedFiles = Array.from(e.target.files);
+        setFiles(selectedFiles);
+
+        // 重置當前索引
+        setCurrentIndex(0);
+
+        // 讀取所有選擇的檔案並更新預覽URLs
+        const fileReaders = selectedFiles.map((file) => {
+            return new Promise((resolve) => {
+                let reader = new FileReader();
+
+                reader.onloadend = () => {
+                    resolve(reader.result);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+
+        Promise.all(fileReaders).then((urls) => {
+            setImagePreviewUrls(urls);
+        });
     };
 
-    const deleteFile = (indexToDelete) => {
-        setSelectedFiles(currentFiles => currentFiles.filter((_, index) => index !== indexToDelete));
-    };
-
-    const toggleFileList = () => {
-        setShowFileList(!showFileList);
-    };
-
-    // 印出待上傳檔案的函式
-    // 調整 printSelectedFiles 以僅返回元素
-    const printSelectedFiles = () => {
-        return selectedFiles.length > 0 ? selectedFiles.map((file, index) => (
-            <div key={index} className="flex items-center justify-start mt-2 truncate font-serif hover:bg-gray-300">
-                <div onClick={() => deleteFile(index)} className="cursor-pointer">
-                    <BsFillTrash2Fill />
-                </div>
-                {file.name}
-            </div>
-        )) : <div className='flex items-center justify-center font-bold'>空空如也~~~</div>;
-    };
-
-
-    // 設定清單的位置
-    useEffect(() => {
-        if (showFileList && buttonRef.current) {
-            const button = buttonRef.current;
-            const fileList = document.querySelector(".fileList");
-
-            if (fileList) {
-                // 計算 fileList 的新位置
-                const topPosition = button.offsetTop + button.offsetHeight; // 按鈕底部的位置
-                const leftPosition = button.offsetLeft + button.offsetWidth; // 按鈕右邊的位置
-
-                // 設定 fileList 的樣式
-                fileList.style.position = 'absolute';
-                fileList.style.top = `${topPosition}px`;
-                fileList.style.left = `${leftPosition}px`;
-            }
+    const nextImage = () => {
+        if (currentIndex < files.length - 1) {
+            setCurrentIndex(currentIndex + 1);
         }
-    }, [showFileList, buttonRef]);
+    };
+
+    const prevImage = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+
+
 
     return (
-        <div className="mx-auto w-full md:w-1/2 p-4 relative">
-            <div className="bg-white shadow-md rounded-lg overflow-hidden m-4 h-40 flex flex-col items-center">
-                <div className="border-4 border-dashed rounded mt-4 px-5 md:px-20 lg:px-40 py-8 cursor-pointer relative"
-                    onClick={() => document.querySelector(".inputFile").click()}>
-                    <input type="file" className="inputFile" onChange={handleFileChange} hidden multiple />
-                    <span className='font-bold'>給我新梗圖!!</span>
-                </div>
-                <div className="flex items-center justify-end space-x-4 m-4 ml-96">
-                    <div className="cursor-pointer">
-                        <BsFillSendFill size={20} />
-                    </div>
-                    <div ref={buttonRef} onClick={toggleFileList} className="cursor-pointer">
-                        <FaList size={20} />
-                    </div>
-                    <div className="fileList overflow-auto absolute bg-white border border-gray-200 mt-2 p-2 rounded shadow-md min-h-20 max-h-40 w-80" style={{ display: showFileList ? 'block' : 'none' }}>
-                        {printSelectedFiles()}
-                    </div>
+        <div className="mx-auto w-full md:w-1/2 p-4 relative select-none">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden m-4">
+                <div className="flex flex-col items-center justify-center min-h-40">
+                    {imagePreviewUrls.length === 0 ? (
+                        <div className="border-4 border-dashed rounded mt-4 px-5 md:px-20 lg:px-40 py-8 cursor-pointer relative flex flex-col items-center justify-center"
+                            onClick={() => document.querySelector(".inputFile").click()}>
+                            <input className="inputFile" type="file" onChange={handleImageChange} hidden multiple />
+                            <span className='font-bold'>給我新梗圖!!</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-between  w-full">
+                            <div onClick={prevImage} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300 ease-in-out cursor-pointer">
+                                {/* 請確保已導入 IoIosArrowBack */}
+                                <IoIosArrowBack />
+                            </div>
+                            <div className="flex justify-center p-4" onClick={() => document.querySelector(".inputFile1").click()}>
+                                <input className="inputFile1" type="file" onChange={handleImageChange} hidden multiple />
+                                {imagePreviewUrls[currentIndex] && (
+                                    <img src={imagePreviewUrls[currentIndex]} alt="Image Preview" className="max-w-xs max-h-48 mx-4" />
+                                )}
+                            </div>
+                            <div onClick={nextImage} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300 ease-in-out cursor-pointer">
+                                {/* 請確保已導入 IoIosArrowForward */}
+                                <IoIosArrowForward />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
