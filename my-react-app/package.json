@@ -6,11 +6,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
+    "build": "vite biuld",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy":"npm run biuld",
-    "deploy":"gh-pages -d build"
+    "deploy":"gh-pages -d biuld"
   },
   "dependencies": {
     "react": "^18.2.0",
