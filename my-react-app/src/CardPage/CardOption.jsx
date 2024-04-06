@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FaGear } from "react-icons/fa6";
-import { DeleteHero } from '../MyAPI/HeroService';
 
 function CardOption(props) {
+    const imageSha = props.imageSha;
+    const imagePath = props.imagePath;
+    const user_id=localStorage.getItem('id');
     const [showOptions, setShowOptions] = useState(false);
     const [optionsPosition, setOptionsPosition] = useState({ top: 0, left: 0 });
     const gearIconRef = useRef(null); // 用於引用齒輪圖標的DOM元素
@@ -35,23 +37,13 @@ function CardOption(props) {
         updateOptionsPosition();
     };
 
-    const heroId = props.id;
     const handleDelete = async () => {
-        console.log("來自handleDelete的ID:"+heroId)
-        try {
-          await DeleteHero(heroId);
-          alert('成功刪除英雄');
-          // 在這裡進行後續操作，比如刷新列表
-        } catch (error) {
-          console.error('刪除英雄失敗', error);
-          alert('刪除英雄失敗');
-        }
+        console.log("來自handleDelete的ID:"+imageSha+",要刪除的path:"+imagePath+"目前登陸者:"+user_id)
       };
 
     // 選項菜單內容
     const optionsContent = (
         <div style={{ position: 'absolute', top: `${optionsPosition.top}px`, left: `${optionsPosition.left}px`, zIndex: 50 }} className="mt-2 py-2 w-48 bg-white rounded-md shadow-xl">
-            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">編輯</a>
             <a onClick={handleDelete} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">刪除</a>
         </div>
     );

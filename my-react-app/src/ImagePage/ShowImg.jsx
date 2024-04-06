@@ -10,8 +10,8 @@ function ShowImg() {
     useEffect(() => {
         const fetchImgPaths = async () => {
             try {
-                const ID = localStorage.getItem('ID');
-                const result = await GetImgPath(ID);
+                const id = localStorage.getItem('id');
+                const result = await GetImgPath(id);
                 setImgPaths(result);
             } catch (error) {
                 console.error('Failed to fetch data:', error);
@@ -26,8 +26,9 @@ function ShowImg() {
                 const imgsData = await Promise.all(imgPaths.map(async (path) => {
                     try {
                         // 假設GetImg返回一個物件{ imgURL, imageSha }
-                        const { imgURL, imageSha } = await GetImg(encodeURIComponent(path.imgPath));
-                        return { imgURL, imageSha }; // 直接返回這個物件
+                        const { imgURL, imageSha } = await GetImg(encodeURIComponent(path.image_path));
+                        const imagePath=path.image_path;
+                        return { imgURL, imageSha,imagePath }; // 直接返回這個物件
                     } catch (error) {
                         console.error('Failed to fetch image:', error);
                         return null; // 在錯誤情況下返回 null
@@ -42,12 +43,13 @@ function ShowImg() {
     if (imgs.length === 0) return <div>Loading...</div>;
 
     return (
-        <div >
-            <NewCard/>
+        <div>
+            <NewCard />
             <Card imgs={imgs} />
         </div>
+
     );
-    
+
 }
 
 export default ShowImg;

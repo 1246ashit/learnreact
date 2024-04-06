@@ -2,8 +2,8 @@ import React, { useState } from 'react'; // 移除重複的導入
 
 function LoginPage() {
   const [formData, setFormData] = useState({
-    Email: "",
-    Password: ""
+    username: "",
+    password: ""
   });
 
   const handleChange = (e) => {
@@ -31,7 +31,7 @@ function LoginPage() {
       if (response.ok) {
         //console.log('提交成功, Token:', data);
         localStorage.setItem('token', data.token); // 儲存JWT到localStorage
-        localStorage.setItem('ID', data.id);
+        localStorage.setItem('id', data.id);
         // 刷新頁面
         window.location.reload();
       } else {
@@ -49,23 +49,23 @@ function LoginPage() {
         <span className="mb-3 text-4xl font-bold">歡迎回來!!</span>
         <form onSubmit={handleSubmit}>
           <div className="py-4">
-            <label htmlFor="Email" className="mb-2 text-md">Email:</label>
+            <label htmlFor="username" className="mb-2 text-md">帳號:</label>
             <input
               className="w-full p-2 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500"
-              type="email"
-              id="Email"
-              name="Email"
-              value={formData.Email}
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
               onChange={handleChange} />
           </div>
           <div className="py-4">
-            <label className="mb-2 text-md" htmlFor="Password">Password:</label>
+            <label className="mb-2 text-md" htmlFor="password">密碼:</label>
             <input
               className="w-full p-2 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500"
               type="password"
-              id="Password"
-              name="Password"
-              value={formData.Password}
+              id="password"
+              name="password"
+              value={formData.password}
               onChange={handleChange} />
           </div>
           <button
