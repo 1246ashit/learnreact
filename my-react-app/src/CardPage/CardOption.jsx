@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FaGear } from "react-icons/fa6";
+import { deleteImage } from '../MyAPI/ImgService';
 
 function CardOption(props) {
     const imageSha = props.imageSha;
@@ -38,8 +39,19 @@ function CardOption(props) {
     };
 
     const handleDelete = async () => {
-        console.log("來自handleDelete的ID:"+imageSha+",要刪除的path:"+imagePath+"目前登陸者:"+user_id)
+      
+        console.log(`來自handleDelete的ID: ${imageSha}, 要刪除的path: ${imagePath} 目前登陸者: ${user_id}`);
+      
+        try {
+          // 調用deleteImage函數，並等待它完成
+          const result = await deleteImage(user_id, imagePath, imageSha);
+          console.log(result);
+          window.location.reload();
+        } catch (error) {
+          console.error('刪除圖片時發生錯誤:', error);
+        }
       };
+      
 
     // 選項菜單內容
     const optionsContent = (
@@ -50,7 +62,7 @@ function CardOption(props) {
 
     return (
         <>
-            <div ref={gearIconRef} onClick={toggleOptions} className="cursor-pointer" style={{marginLeft:"95%"}}>
+            <div ref={gearIconRef} onClick={toggleOptions} className="cursor-pointer mt-4" style={{marginLeft:"95%"}}>
                 <FaGear size={30}/>
                 {showOptions && ReactDOM.createPortal(optionsContent, document.body)}
             </div>
