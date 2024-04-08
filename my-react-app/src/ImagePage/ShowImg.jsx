@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GetImgPath,} from '../MyAPI/ImgService';
+import { GetImgPath, } from '../MyAPI/ImgService';
 import Card from '../CardPage/Card';
 import NewCard from '../CardPage/NewCard';
 
@@ -19,16 +19,20 @@ function ShowImg() {
         fetchImgPaths();
     }, [imgs]);
 
-    if (imgs.length === 0){
-        return (<div style={{ width: '480px', height:'326px'}}>
-            <NewCard /></div>)
-    }else{
+
+
+    if (imgs.length === 0) {
         return (
-            <div style={{ width: '480px', height:'326px'}}>
+            <div style={{ width: '480px', height:"384px"}}>
+                <NewCard />
+            </div>);
+    } else {
+        return (
+            <div>
                 <NewCard />
                 <Card imgs={imgs} />
             </div>
-    
+
         );
     }
 }

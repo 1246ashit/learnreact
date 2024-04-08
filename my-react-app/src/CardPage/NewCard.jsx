@@ -82,23 +82,21 @@ function NewCard() {
         if (!currentFile) return null;
 
         return currentFile.type.startsWith('video/') ? (
-            <video controls src={currentFile.url} className="w-full max-h-48 mx-4"></video>
+            <video controls src={currentFile.url} className="max-w-xs max-h-48 mx-4"></video>
         ) : (
-            <img src={currentFile.url} alt="Preview" className="w-full max-h-48 mx-4" />
+            <img src={currentFile.url} alt="Preview" className="max-w-xs max-h-48 mx-4" />
         );
     };
 
     return (
-        <div className="p-4 relative select-none w-full" >
-            <div className="bg-white shadow-md rounded-lg overflow-hidden ">
-                <div className="flex flex-col items-center justify-center">
-                    {previewUrls.length === 0 ? (
-                        <div className="flex items-center justify-between w-full">
-                            <div className="border-4 border-dashed rounded mt-4 px-5 md:px-20 lg:px-40 py-8 cursor-pointer relative flex flex-col items-center justify-center"
-                                onClick={() => document.querySelector(".inputFile").click()}>
-                                <input className="inputFile" type="file" onChange={handleFileChange} hidden multiple />
-                                <span className='font-bold'>上傳圖片或影片</span>
-                            </div>
+        <div className="p-4 w-3/5 relative select-none" style={{ marginLeft: '25%' }}>
+            <div className="bg-white shadow-md rounded-lg overflow-hidden m-4">
+                <div className="flex flex-col items-center justify-center min-h-40">
+                {previewUrls.length === 0 ? (
+                        <div className="border-4 border-dashed rounded mt-4 px-5 md:px-20 lg:px-40 py-8 cursor-pointer relative flex flex-col items-center justify-center"
+                            onClick={() => document.querySelector(".inputFile").click()}>
+                            <input className="inputFile" type="file" onChange={handleFileChange} hidden multiple />
+                            <span className='font-bold'>上傳圖片或影片</span>
                         </div>
                     ) : (
                         <div className="flex items-center justify-between w-full">
