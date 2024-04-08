@@ -1,98 +1,113 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaList } from "react-icons/fa6";
-import { BsFillSendFill, BsFillTrash2Fill } from "react-icons/bs";
+import React, { useState } from 'react';
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
-import { PostImage } from "../MyAPI/ImgService"
+import { BsFillSendFill } from "react-icons/bs";
+import { SaveImgPath } from '../MyAPI/ImgService';
 
-function NewCard(props) {
+function NewCard() {
     const [files, setFiles] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
+    const [previewUrls, setPreviewUrls] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
-    const handleImageChange = (e) => {
+    const handleFileChange = (e) => {
         e.preventDefault();
 
-        // 更新檔案列表
         const selectedFiles = Array.from(e.target.files);
         setFiles(selectedFiles);
-
-        // 重置當前索引
         setCurrentIndex(0);
 
-        // 讀取所有選擇的檔案並更新預覽URLs
-        const fileReaders = selectedFiles.map((file) => {
-            return new Promise((resolve) => {
-                let reader = new FileReader();
+        const fileReaders = selectedFiles.map(file => {
+            return new Promise(resolve => {
+                const reader = new FileReader();
 
-                reader.onloadend = () => {
-                    resolve(reader.result);
-                };
-
+                reader.onloadend = () => resolve({ url: reader.result, type: file.type });
                 reader.readAsDataURL(file);
             });
         });
 
-        Promise.all(fileReaders).then((urls) => {
-            setImagePreviewUrls(urls);
+        Promise.all(fileReaders).then(files => {
+            setPreviewUrls(files);
         });
     };
 
     const nextImage = () => {
-        if (currentIndex < files.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        }
+        setCurrentIndex((prevIndex) => (prevIndex < files.length - 1 ? prevIndex + 1 : prevIndex));
     };
 
     const prevImage = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-        }
+        setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
     };
 
-    const uploadImages = async () => {
-        // 假設userId從props或其他方式獲得
-        const userId = localStorage.getItem('id'); // 請根據實際情況替換
-        let uploadSuccessful = true; // 假設所有上傳都將成功
+    const uploadFiles = async () => {
+        const userId = localStorage.getItem('id');
+        let uploadSuccessful = true;
 
-        for (let file of files) {
+        if (files.length === 0) {
+            console.log("沒有選擇檔案");
+            uploadSuccessful = false;
+            return;
+        }
+
+        let uploadedCount = 0;
+
+        for (const file of files) {
+            console.log(file.name);
             try {
-                const result = await PostImage(userId, file);
-                console.log(result); // 處理上傳成功的情況
+                const response = await SaveImgPath(userId, file, (progressEvent) => {
+                    const progress = (progressEvent.loaded / progressEvent.total) * 100;
+                    setUploadProgress((uploadedCount + progress / files.length).toFixed(2));
+                });
+                if (!response) {
+                    uploadSuccessful = false;
+                    console.error("File upload failed", file.name);
+                    break;
+                }
+                uploadedCount += 1;
+                setUploadProgress((uploadedCount / files.length) * 100);
             } catch (error) {
-                console.error('上傳失敗:', error); // 處理上傳失敗的情況
-                uploadSuccessful = false; // 至少有一個文件上傳失敗
+                console.error("Error uploading file", file.name, error);
             }
         }
 
         if (uploadSuccessful) {
-            window.location.reload(); // 所有文件嘗試上傳後，如果都成功了，則刷新頁面
+            console.log("所有檔案上傳成功");
+            window.location.reload()
+        } else {
+            console.log("一個或多個檔案上傳失敗");
         }
     };
 
+    const renderPreview = () => {
+        const currentFile = previewUrls[currentIndex];
+        if (!currentFile) return null;
 
-
+        return currentFile.type.startsWith('video/') ? (
+            <video controls src={currentFile.url} className="w-full max-h-48 mx-4"></video>
+        ) : (
+            <img src={currentFile.url} alt="Preview" className="w-full max-h-48 mx-4" />
+        );
+    };
 
     return (
-        <div className="p-4 w-3/5 relative select-none" style={{ marginLeft: '25%' }} >
-            <div className="bg-white shadow-md rounded-lg overflow-hidden m-4">
-                <div className="flex flex-col items-center justify-center min-h-40">
-                    {imagePreviewUrls.length === 0 ? (
-                        <div className="border-4 border-dashed rounded mt-4 px-5 md:px-20 lg:px-40 py-8 cursor-pointer relative flex flex-col items-center justify-center"
-                            onClick={() => document.querySelector(".inputFile").click()}>
-                            <input className="inputFile" type="file" onChange={handleImageChange} hidden multiple />
-                            <span className='font-bold'>給我新梗圖!!</span>
+        <div className="p-4 relative select-none w-full" >
+            <div className="bg-white shadow-md rounded-lg overflow-hidden ">
+                <div className="flex flex-col items-center justify-center">
+                    {previewUrls.length === 0 ? (
+                        <div className="flex items-center justify-between w-full">
+                            <div className="border-4 border-dashed rounded mt-4 px-5 md:px-20 lg:px-40 py-8 cursor-pointer relative flex flex-col items-center justify-center"
+                                onClick={() => document.querySelector(".inputFile").click()}>
+                                <input className="inputFile" type="file" onChange={handleFileChange} hidden multiple />
+                                <span className='font-bold'>上傳圖片或影片</span>
+                            </div>
                         </div>
                     ) : (
-                        <div className="flex items-center justify-between  w-full">
+                        <div className="flex items-center justify-between w-full">
                             <div onClick={prevImage} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300 ease-in-out cursor-pointer">
-
                                 <IoIosArrowBack />
                             </div>
                             <div className="flex justify-center p-4" onClick={() => document.querySelector(".inputFile1").click()}>
-                                <input className="inputFile1" type="file" onChange={handleImageChange} hidden multiple />
-                                {imagePreviewUrls[currentIndex] && (
-                                    <img src={imagePreviewUrls[currentIndex]} alt="Image Preview" className="max-w-xs max-h-48 mx-4" />
-                                )}
+                                <input className="inputFile1" type="file" onChange={handleFileChange} hidden multiple />
+                                {renderPreview()}
                             </div>
                             <div onClick={nextImage} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300 ease-in-out cursor-pointer">
                                 <IoIosArrowForward />
@@ -100,10 +115,22 @@ function NewCard(props) {
                         </div>
                     )}
                 </div>
+                <div className="my-2">
+                    {uploadProgress > 0 && uploadProgress < 100 && (
+                        <>
+                            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+                            </div>
+                            <div className="text-center text-sm font-medium mt-2">
+                                上傳中...
+                            </div>
+                        </>
+                    )}
+                </div>
                 <div
-                    className="cursor-pointer p-4 mr-4 " style={{marginLeft:"85%"}}
-                    onClick={uploadImages}>
-                    <BsFillSendFill size={30}/>
+                    className="cursor-pointer p-4 mr-4 " style={{ marginLeft: "85%" }}
+                    onClick={uploadFiles}>
+                    <BsFillSendFill size={30} />
                 </div>
             </div>
         </div>

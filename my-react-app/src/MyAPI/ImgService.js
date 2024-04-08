@@ -1,96 +1,45 @@
-const BASE_URL = 'http://localhost:5259/api/';
-
 // 假設你的JWT儲存在localStorage中
 const getAuthToken = () => localStorage.getItem('token');
 
-// 通用的fetch函數，現在包含Authorization標頭
-const fetchApi = async (endpoint, options = {}) => {
-  const token = getAuthToken(); // 從某處獲取JWT
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}), // 如果有token，則添加Authorization標頭
-    },
-  });
-  if (!response.ok) {
-    throw new Error('API call failed');
-  }
-  const contentType = response.headers.get('Content-Type');
-  if (contentType && contentType.startsWith('image/')) {
-    const imageSha = response.headers.get('x-image-sha');
-    const blob = await response.blob(); // 回應體可以轉換為 Blob
-    const imgURL = URL.createObjectURL(blob);
-    console.log(imageSha);
-    return { imgURL, imageSha };
-  } else {
-    return response.json();
-  }
-};
-
-
-export const GetImgPath = async (id) => {
-  return fetchApi(`ImageCRUD/GetImgPath?user_id=${id}`);
-};
-
-export const GetImg = async (image_path) => {
-  return fetchApi(`ImageCRUD/GetImage?imagePath=${image_path}`);
-};
-
-export const PostImage = async (userId, file) => {
-  const formData = new FormData();
-  formData.append('file', file); // 確保這裡的 'file' 是您服務器端期望的字段名稱
-
+export const GetImgPath = async (userId) => {
   try {
-    const response = await fetch(`http://localhost:5259/api/ImageCRUD/PostImage?user_id=${userId}`, {
+    const response = await fetch(`http://localhost:5259/api/Img2/GetFile?user_id=${userId}`, {
+      method: 'GET',
+      headers: {
+        'Accept': '*/*'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("There was an error fetching the image path", error);
+  }
+};
+
+export const SaveImgPath = async (userId, file) => {
+  try {
+    const formData = new FormData();
+    formData.append('formFile', file, file.name); // 注意欄位名稱是 'formFile'
+    formData.append('type', file.type); // 添加 MIME 類型
+
+    const response = await fetch(`http://localhost:5259/api/Img2/SendFile?user_id=${userId}`, {
       method: 'POST',
-      headers: {
-        'accept': '*/*', // 這裡可以接受任何類型的回應
-      },
-      body: formData, // FormData 實例作為請求主體
+      // 在這裡，我們不設定 headers，因為 FormData 會自動設定 Content-Type 為 multipart/form-data 並包含 boundary 參數
+      body: formData,
     });
 
     if (!response.ok) {
-      throw new Error(`API call failed with status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.text(); // 假設服務器回傳 JSON，如果不是請改為 response.text() 或其他合適的方法
-    return result;
-
+    return true; // 或者是其他的成功訊息
   } catch (error) {
-    console.error('Error during API call:', error);
-    throw error; // 可能想要在這裡處理錯誤或將其傳遞給呼叫者
+    console.error(error);
+    return false;
   }
 };
-
-
-export const deleteImage = async (userId, imagePath, imageSha) => {
-  try {
-    const response = await fetch('http://localhost:5259/api/ImageCRUD/DeleteImage', {
-      method: 'DELETE', // 設置請求方法為 DELETE
-      headers: {
-        'Content-Type': 'application/json', // 請求內容類型為 JSON
-        'accept': '*/*', // 接受所有類型的響應
-      },
-      body: JSON.stringify({ // 把物件轉換為 JSON 字串
-        user_id: userId,
-        path: imagePath,
-        sha: imageSha,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`API call failed with status: ${response.status}`);
-    }
-
-    console.log('File deleted successfully.');
-    return await response.text(); // 或者根據您的API，這裡可能需要改為 response.json()
-
-  } catch (error) {
-    console.error('Error during API call:', error);
-    throw error;
-  }
-};
-
-

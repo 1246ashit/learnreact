@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { FaGear } from "react-icons/fa6";
-import { deleteImage } from '../MyAPI/ImgService';
 
 function CardOption(props) {
-    const imageSha = props.imageSha;
-    const imagePath = props.imagePath;
-    const user_id=localStorage.getItem('id');
+    const image_id = props.image_id;
+    const image_name = props.image_name;
+    const user_id = localStorage.getItem('id');
     const [showOptions, setShowOptions] = useState(false);
     const [optionsPosition, setOptionsPosition] = useState({ top: 0, left: 0 });
     const gearIconRef = useRef(null); // 用於引用齒輪圖標的DOM元素
@@ -16,11 +15,12 @@ function CardOption(props) {
         if (gearIconRef.current) {
             const rect = gearIconRef.current.getBoundingClientRect();
             setOptionsPosition({
-                top: rect.top + window.scrollY + rect.height, // 添加window.scrollY以支持滾動
+                top: rect.top + window.scrollY + rect.height,
                 left: rect.left + window.scrollX
             });
         }
     };
+
 
     useEffect(() => {
         // 監聽窗口大小變化
@@ -39,19 +39,18 @@ function CardOption(props) {
     };
 
     const handleDelete = async () => {
-      
-        console.log(`來自handleDelete的ID: ${imageSha}, 要刪除的path: ${imagePath} 目前登陸者: ${user_id}`);
-      
-        try {
-          // 調用deleteImage函數，並等待它完成
-          const result = await deleteImage(user_id, imagePath, imageSha);
-          console.log(result);
-          window.location.reload();
+
+        console.log(`來自handleDelete的ID: ${image_id}, 要刪除的圖名: ${image_name}`);
+
+        /*try {
+            const result = await deleteImage(user_id, imageName, imageSha);
+            console.log(result);
+            window.location.reload();
         } catch (error) {
-          console.error('刪除圖片時發生錯誤:', error);
-        }
-      };
-      
+            console.error('刪除圖片時發生錯誤:', error);
+        }*/
+    };
+
 
     // 選項菜單內容
     const optionsContent = (
@@ -62,8 +61,8 @@ function CardOption(props) {
 
     return (
         <>
-            <div ref={gearIconRef} onClick={toggleOptions} className="cursor-pointer mt-4" style={{marginLeft:"95%"}}>
-                <FaGear size={30}/>
+            <div ref={gearIconRef} onClick={toggleOptions} className="cursor-pointer mt-4" style={{ marginLeft: "95%" }}>
+                <FaGear size={30} />
                 {showOptions && ReactDOM.createPortal(optionsContent, document.body)}
             </div>
         </>
