@@ -2,6 +2,7 @@
 import { BiSolidLogIn } from "react-icons/bi";
 //
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 引入 useNavigate
 //api
 import { LoginFu } from "./LoginFu";
 //
@@ -9,18 +10,20 @@ import { LoginFu } from "./LoginFu";
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // 使用 useNavigate 鉤子
 
-  
+
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
     const response = await LoginFu(username, password)
-    if (response && response.token && response.userId) {
+    if (response && response.token && response.id) {
       // 儲存 token 和 user_id 到 localStorage
       localStorage.setItem('token', response.token);
-      localStorage.setItem('userId', response.userId);
+      localStorage.setItem('userid', response.id);
       console.log('Login successful');
       // 可以加入頁面跳轉或狀態更新的邏輯
+      navigate('/ShowImage');
     } else {
       console.log('No token or userId received');
     }

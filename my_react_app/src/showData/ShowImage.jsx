@@ -1,12 +1,14 @@
 import { useState } from 'react';
-
+import { FaHome } from "react-icons/fa";
+import Navbar from './Navbar';
+import ImageLog from './ImageLog';
 function ShowImage() {
 
-
-return(
-    <>
-        ShowImage
-    </>
-);
+    return (
+        <div className='flex h-screen bg-black'>
+            <Navbar/>
+            <ImageLog/>
+        </div>
+    );
 }
-export default Login;
+export default ShowImage;
