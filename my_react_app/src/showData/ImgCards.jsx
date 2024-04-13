@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { FaHome } from "react-icons/fa";
 function ImgCards(props) {
-
     return (
         <>
             <div className='flex w-4/5 h-auto items-center justify-center rounded-xl bg-purple-700 mt-4'>

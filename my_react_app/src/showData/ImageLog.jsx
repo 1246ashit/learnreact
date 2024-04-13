@@ -50,12 +50,12 @@ function ImageLog() {
     }, [files]);
 
     return (
-        <div className='flex flex-col w-2/4 h-full items-start justify-start px-8' style={{ marginLeft: "30%", marginTop: "5%" }}>
+        <>
             {mediaPaths.map((media, index) =>
                 media.type === '.mp4' ? <VideoCard key={index} path={media.path} />
                                         : <ImgCards key={index} path={media.path} />
             )}
-        </div>
+        </>
     );
 }
 
