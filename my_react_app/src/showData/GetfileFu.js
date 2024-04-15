@@ -1,5 +1,5 @@
-export async function Getfile(userid) {
-    const url = `http://localhost:5259/api/Img2/GetFile?user_id=${userid}`;
+export async function Getfile(userid,page) {
+    const url = `http://localhost:5259/api/Img2/GetFile?user_id=${userid}&page=${page}`;
   
     try {
       const response = await fetch(url, {
@@ -42,7 +42,7 @@ export async function Getfile(userid) {
       }
   
       const responseData = response.json();
-      console.log('GetfilePath Successful:', responseData);
+      //console.log('GetfilePath Successful:', responseData);
       return responseData;
     } catch (error) {
       console.error('GetfilePath Failed:', error);

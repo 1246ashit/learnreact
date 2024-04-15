@@ -11,7 +11,7 @@ function ImageLog() {
 
     const fetchFiles = async () => {
         try {
-            const response = await Getfile(userid);
+            const response = await Getfile(userid,1);
             if (response && Array.isArray(response)) {
                 setFiles(response);
             } else {
@@ -34,7 +34,7 @@ function ImageLog() {
                     if (info.media.length === 1) {
                         return { type: info.media_type, path: info.media[0].chunk_path };
                     } else if (info.media.length >= 2) {
-                        return null;
+                        return { type: info.media_type, path: info};
                     }
                 }));
 
