@@ -6,14 +6,20 @@ import { Getfile, GetfilePath } from './GetfileFu';
 function ImageLog() {
     const [files, setFiles] = useState([]);
     const [mediaPaths, setMediaPaths] = useState([]);
+    const [pageIndex, setPageIndex] = useState(1);
 
     const userid = localStorage.getItem('userid');
 
     const fetchFiles = async () => {
         try {
-            const response = await Getfile(userid,1);
+            const response = await Getfile(userid, pageIndex);
             if (response && Array.isArray(response)) {
-                setFiles(response);
+                setFiles(prevFiles => {
+                    if (JSON.stringify(prevFiles) !== JSON.stringify(response)) {
+                        return response;
+                    }
+                    return prevFiles;
+                });
             } else {
                 console.log("Response is not an array or is empty.");
             }
@@ -22,32 +28,44 @@ function ImageLog() {
         }
     };
 
+    const fetchFilePaths = async () => {
+        try {
+            const paths = await Promise.all(files.map(async file => {
+                const info = await GetfilePath(file.media_id, file.image_name, file.media_type);
+                if (info.media.length > 0) {
+                    return { type: file.media_type, path: info };
+                }
+            }));
+
+            setMediaPaths(prevPaths => [...prevPaths, ...paths.filter(path => path !== null)]);
+        } catch (error) {
+            console.error("Error in fetchFilePaths: ", error);
+        }
+    };
+
     useEffect(() => {
         fetchFiles();
-    }, []);
+    }, [pageIndex]);
 
     useEffect(() => {
-        const fetchFilePaths = async () => {
-            try {
-                const paths = await Promise.all(files.map(async file => {
-                    const info = await GetfilePath(file.media_id, file.image_name, file.media_type);
-                    if (info.media.length === 1) {
-                        return { type: info.media_type, path: info.media[0].chunk_path };
-                    } else if (info.media.length >= 2) {
-                        return { type: info.media_type, path: info};
-                    }
-                }));
-
-                setMediaPaths(paths.filter(path => path !== null));  // Filter out null values
-            } catch (error) {
-                console.error("Error in fetchFilePaths: ", error);
-            }
-        };
-
         if (files.length > 0) {
             fetchFilePaths();
         }
     }, [files]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Calculate the remaining scrollable height.
+            const triggerHeight = document.documentElement.scrollHeight - (document.documentElement.scrollHeight * 0.20);
+            // Check if the scroll position plus the window height has reached 80% of the total height.
+            if (Math.ceil(window.innerHeight + window.scrollY) >= triggerHeight) {
+                setPageIndex(prevPageIndex => prevPageIndex + 1);
+            }
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
         <>
