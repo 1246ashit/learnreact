@@ -31,7 +31,7 @@ function ImageLog() {
     const fetchFilePaths = async () => {
         try {
             const paths = await Promise.all(files.map(async file => {
-                const info = await GetfilePath(file.media_id, file.image_name, file.media_type);
+                const info = await GetfilePath(file.media_id, file.image_name, file.media_type,file.m3u8_id,file.m3u8_path);
                 if (info.media.length > 0) {
                     return { type: file.media_type, path: info };
                 }
@@ -55,10 +55,10 @@ function ImageLog() {
 
     useEffect(() => {
         const handleScroll = () => {
-            // Calculate the remaining scrollable height.
-            const triggerHeight = document.documentElement.scrollHeight - (document.documentElement.scrollHeight * 0.20);
-            // Check if the scroll position plus the window height has reached 80% of the total height.
-            if (Math.ceil(window.innerHeight + window.scrollY) >= triggerHeight) {
+            // 計算可滾動的最底部高度。
+            const bottomTriggerHeight = document.documentElement.scrollHeight - window.innerHeight;
+            // 檢查是否滾動到最底部。
+            if (Math.ceil(window.innerHeight + window.scrollY) >= bottomTriggerHeight) {
                 setPageIndex(prevPageIndex => prevPageIndex + 1);
             }
         };
@@ -66,6 +66,7 @@ function ImageLog() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+    
 
     return (
         <>
