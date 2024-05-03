@@ -31,8 +31,8 @@ function ImageLog() {
     const fetchFilePaths = async () => {
         try {
             const paths = await Promise.all(files.map(async file => {
-                const info = await GetfilePath(file.media_id, file.image_name, file.media_type,file.m3u8_id,file.m3u8_path);
-                if (info.media.length > 0) {
+                const info = await GetfilePath(file.media_id, file.image_name, file.media_type,file.m3u8_id,file.m3u8_path,file.thumbnail);
+                if (info!=null) {
                     return { type: file.media_type, path: info };
                 }
             }));

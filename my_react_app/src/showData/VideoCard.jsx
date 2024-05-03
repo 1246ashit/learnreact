@@ -20,7 +20,7 @@ function VideoCard(props) {
             setVideoSrc({
                 m3u8Path: props.path.m3u8_path,
                 m3u8Id: props.path.m3u8_id,
-                preview: props.path.media[0].chunk_path_in_tg
+                preview: props.path.thumbnail
             });
         }
     }, [props.path]);
@@ -59,7 +59,7 @@ function VideoCard(props) {
                     {props.path.media.length > 0 && (
                         <img
                             className='w-10/12 h-auto rounded-xl p-1'
-                            src='https://imarketing.iwant-in.net/wp-content/uploads/2021/04/2021_04_08_P1_123RF.jpg'
+                            src={videoSrc.preview}
                             style={{ position: 'relative', zIndex: 1 }} // 確保 ReactPlayer 在背景
                         />
                     )}

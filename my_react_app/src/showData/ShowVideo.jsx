@@ -8,7 +8,7 @@ function ShowVideo(prop) {
     const videoRef = useRef(null);
     const [url, setUrl] = useState(null);
     const userid = localStorage.getItem('userid');
-    const baseUrl = "http://localhost:5259/api/Stream/";
+    const baseUrl = "http://localhost:5259/api/Stream/StreamTS2/";
 
     const fetchVideo = async () => {
         const response = await GetStreamVideo(userid, prop.videoSrc.m3u8Path, prop.videoSrc.m3u8Id);
@@ -17,7 +17,7 @@ function ShowVideo(prop) {
             const m3u8Response = await fetch(response);
             let m3u8Content = await m3u8Response.text();
             // 使用正則表達式修正 TS 檔案的 URL
-            const correctedM3U8 = m3u8Content.replace(/(.+\.ts)/g, baseUrl + '$1');
+            const correctedM3U8 = m3u8Content.replace(/(.+\.ts)/g, baseUrl + '$1'+'/'+userid);
             // 創建 blob 並生成新的 URL
             const blob = new Blob([correctedM3U8], { type: 'application/x-mpegURL' });
             const correctedUrl = URL.createObjectURL(blob);
@@ -58,9 +58,11 @@ function ShowVideo(prop) {
                 onClick={() => prop.setallVideo(false)}>
                 <GiCancel size={'30px'} /></div>
             {url ? (
-                <video ref={videoRef} controls width="90%" height="90%">
+                <div className="flex justify-center items-center w-9/10 max-h-96">
+                <video ref={videoRef} controls className="w-full h-full object-contain">
                     Your browser does not support the video tag.
                 </video>
+            </div>
             ) : (
                 <ReactLoading height={'20%'} width={'20%'} />
             )}

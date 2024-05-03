@@ -26,7 +26,7 @@ export async function Getfile(userid, page) {
 
 
 
-export async function GetfilePath(media_id, image_name, media_type, m3u8_id, m3u8_path) {
+export async function GetfilePath(media_id, image_name, media_type, m3u8_id, m3u8_path,thumbnail) {
   const url = `http://localhost:5259/api/Img2/GetFilePath`;
 
   // 根據 API 要求設置 POST 請求的 Body 內容
@@ -35,7 +35,8 @@ export async function GetfilePath(media_id, image_name, media_type, m3u8_id, m3u
     image_name: image_name,
     media_type: media_type,
     m3u8_id: m3u8_id,
-    m3u8_path: m3u8_path
+    m3u8_path: m3u8_path,
+    thumbnail:thumbnail
   };
 
   try {

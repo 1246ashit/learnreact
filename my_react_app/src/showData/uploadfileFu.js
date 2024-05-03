@@ -1,10 +1,12 @@
-export async function uploadFile(userId, durationseconds, file) {
-  const url = `http://localhost:5259/api/Img2/SendFile?userId=${userId}&durationseconds=${durationseconds}`;
+export async function uploadFile(userId, file) {
+  
+  const url = `http://localhost:5259/api/Img2/SendFile?userId=${userId}`;
 
   const formData = new FormData();
   formData.append('formFile', file);
 
   try {
+    
     const response = await fetch(url, {
       method: 'POST',
       headers: {
